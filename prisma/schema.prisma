@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model user {
+  id                Int           @id @unique @default(autoincrement())
+  name              String
+  surname           String
+  email             String        @unique
+  password          String
+  phone             String       @unique
+  createdAt         DateTime      @default(now())
+  modifyAt          DateTime      @default(now())
+  role              String        @default("user")
+  blocked           Boolean       @default(false)
+
+  pedido pedido[]
+}
+
+model pedido {
+  id      String    @id @unique @default(uuid())
+  number  Int
+  userId  Int
+  user    user      @relation(fields: [userId], references: [id])
+  status  String
+  createdAt DateTime  @default(now())
+  hour    DateTime
+  total     Float
+
+
+  
+
+  food_pedido food_pedido[]
+}
+
+model food {
+  id          Int       @id @unique @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  image       String
+  categoryId  Int
+  category    food_category @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime  @default(now())
+  modifyAt    DateTime  @default(now())
+
+  food_pedido food_pedido[]
+}
+
+model food_pedido {
+  id        Int      @id @unique @default(autoincrement())
+  foodId    Int
+  pedidoId  String
+  price     Float
+  food      food     @relation(fields: [foodId], references: [id])
+  pedido    pedido   @relation(fields: [pedidoId], references: [id])
+  quantity  Int
+  createdAt DateTime @default(now())
+  modifyAt  DateTime @default(now())
+}
+
+model food_category {
+  id        Int      @id @unique @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  modifyAt  DateTime @default(now())
+
+  food food[]
+}
+
+model OrderCounter {
+  id     Int  @id @default(1)
+  number Int
+}
