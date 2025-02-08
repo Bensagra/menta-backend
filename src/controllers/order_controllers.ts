@@ -147,8 +147,66 @@ const showOrders = async (req: Request, res: Response, prisma: PrismaClient) => 
     }
 }
 
+const showOrdersConfirmed = async (req: Request, res: Response, prisma: PrismaClient) => {
+    const { userId } = req.body;
+    const todayStart = startOfDay(new Date()); // Primer momento del día
+  const todayEnd = endOfDay(new Date()); // Último momento del día
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId, role: "ADMIN" }
+        });
+        if (!user) {
+            res.status(404).json({ valid: false, message: "User is not admin" });
+            return
+        }
+        const orders = await prisma.pedido.findMany({
+            where: { status: "CONFIRMED"
+                ,hour:{
+                gte: todayStart,
+                lte: todayEnd
+            }},
+            include: {
+                user: {
+                    omit:{
+                        createdAt: true,
+                        modifyAt: true,
+                        password: true,
+                        blocked: true,
+                        role: true,
+
+                    }
+                },
+                food_pedido: {
+                    omit:{
+                        createdAt: true,
+                        modifyAt: true,
+                        
+                        id: true
+                    },
+                    include: {
+                        food: {omit:{
+                            createdAt: true,
+                            modifyAt: true,
+
+                        }}
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({ valid: true, message: "Orders retrieved successfully", data: orders });
+        return
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ valid: false, message: "Error retrieving orders", data: error });
+        return
+    }
+}
+
 export const orderControllers = {
     createOrder,
     orderConfirmation,
-    showOrders
+    showOrders,
+    showOrdersConfirmed
 }
