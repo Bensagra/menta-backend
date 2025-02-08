@@ -104,7 +104,7 @@ const showOrders = async (req: Request, res: Response, prisma: PrismaClient) => 
             return
         }
         const orders = await prisma.pedido.findMany({
-            where: { status: "pending"
+            where: { status: "PENDING"
                 ,hour:{
                 gte: todayStart,
                 lte: todayEnd
