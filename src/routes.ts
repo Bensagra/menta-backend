@@ -13,7 +13,7 @@ router.post("/order", (req: Request, res: Response) => orderControllers.createOr
 router.put("/order", (req: Request, res: Response) => orderControllers.orderConfirmation(req, res, prisma));
 router.put("/user/block", (req: Request, res: Response) => userControllers.blockUser(req, res, prisma));
 router.post("/food", (req: Request, res: Response) => foodControllers.createFood(req, res, prisma));
-router.get("/order", (req: Request, res: Response) => orderControllers.showOrders(req, res, prisma));
+router.get("/order/confirmation", (req: Request, res: Response) => orderControllers.showOrders(req, res, prisma));
 
 
 
