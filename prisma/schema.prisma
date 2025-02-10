@@ -49,6 +49,7 @@ model food {
   category    food_category @relation(fields: [categoryId], references: [id])
   createdAt   DateTime  @default(now())
   modifyAt    DateTime  @default(now())
+  deleted     Boolean   @default(false)
 
   food_pedido food_pedido[]
 }

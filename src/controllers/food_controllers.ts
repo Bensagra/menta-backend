@@ -11,7 +11,7 @@ const getFood = (res:Response, prisma:PrismaClient) => {
             modifyAt: true
         },
         include: {
-            food: {omit: {createdAt: true, modifyAt: true}}
+            food: {where:{deleted:false},omit: {createdAt: true, modifyAt: true}}
         }
     }).then((data) => {
         res.status(200).json({valid:true, data});
@@ -116,8 +116,20 @@ const createFood = async (req: Request, res: Response, prisma: PrismaClient) => 
     });
 };
 
+const deleteFood = async (req: Request, res: Response, prisma: PrismaClient) => {
+    const id = parseInt(req.params.id);
+
+    try {
+        const food = await prisma.food.update({ where: { id }, data: { deleted: true } });
+        res.status(200).json({ valid: true, message: "Food deleted successfully", data: food });
+    } catch (error) {
+        res.status(500).json({ valid: false, message: "Error deleting food", data: error });
+    }
+};
+
 export const foodControllers = {
     getFood,
     modifyFood,
-    createFood
+    createFood,
+    deleteFood,
 }
