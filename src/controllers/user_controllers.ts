@@ -31,7 +31,7 @@ const login = async (req: Request, res: Response, prisma: PrismaClient) => {
         });
         if(user){
             if (password !== decryptPassword(user.password)) {
-                res.status(400).json({valid:false, message: "Invalid password"});
+                res.status(401).json({valid:false, message: "Invalid password"});
                 return;
                 
             }
