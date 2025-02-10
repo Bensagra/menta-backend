@@ -15,7 +15,7 @@ router.put("/user/block", (req: Request, res: Response) => userControllers.block
 router.post("/food", (req: Request, res: Response) => foodControllers.createFood(req, res, prisma));
 router.post("/order/confirmation", (req: Request, res: Response) => orderControllers.showOrders(req, res, prisma));
 router.post("/order/get", (req: Request, res: Response) => orderControllers.showOrdersConfirmed(req, res, prisma));
-router.delete("/food/$id", (req: Request, res: Response) => foodControllers.deleteFood(req, res, prisma));
+router.delete("/food", (req: Request, res: Response) => foodControllers.deleteFood(req, res, prisma));
 
 
 export default router;
