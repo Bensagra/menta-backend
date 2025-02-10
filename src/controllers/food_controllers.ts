@@ -117,7 +117,8 @@ const createFood = async (req: Request, res: Response, prisma: PrismaClient) => 
 };
 
 const deleteFood = async (req: Request, res: Response, prisma: PrismaClient) => {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.query.id as string);
+    console.log(id);
 
     try {
         const food = await prisma.food.update({ where: { id }, data: { deleted: true } });
