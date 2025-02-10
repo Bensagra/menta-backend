@@ -37,7 +37,7 @@ const login = async (req: Request, res: Response, prisma: PrismaClient) => {
             }
             res.status(200).json({valid:true, user, message: "User logged in successfully"});
         }else{
-            res.status(404).json({valid:false, message: "User not found"});
+            res.status(401).json({valid:false, message: "User not found"});
         }
     } catch (error) {
         res.status(500).json({valid:false, message: "Error logging in"});
