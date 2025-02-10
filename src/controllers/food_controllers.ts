@@ -67,7 +67,7 @@ const modifyFood = async (req: Request, res: Response, prisma: PrismaClient) => 
 
         res.status(200).json({ valid: true, message: "Food updated successfully", data: updatedFood });
     } catch (error) {
-        res.status(500).json({ valid: false, message: "Error updating food", data: error });
+        res.status(500).json({ valid: false, message: "Error updating food", data: id,description,price,name,imageFile });
     }
 });
 };
