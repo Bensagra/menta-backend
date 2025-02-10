@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import multer from "multer";
 import supabase from "../utilities/supabase";
+import { parse } from 'path';
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).single("image");
 const getFood = (res:Response, prisma:PrismaClient) => {
@@ -58,7 +59,7 @@ const modifyFood = async (req: Request, res: Response, prisma: PrismaClient) => 
             where: { id: parseInt(id) },
             data: {
                 description: description ?? existingFood.description,
-                price: price ?? existingFood.price,
+                price: parseFloat(price) ?? existingFood.price,
                 image: imageUrl, // Se mantiene la anterior si no se subió una nueva
                 modifyAt: new Date(),
                 name: name ?? existingFood.name,
@@ -67,7 +68,7 @@ const modifyFood = async (req: Request, res: Response, prisma: PrismaClient) => 
 
         res.status(200).json({ valid: true, message: "Food updated successfully", data: updatedFood });
     } catch (error) {
-        res.status(500).json({ valid: false, message: "Error updating food", data:{ id,description,price,name,imageFile }});
+        res.status(500).json({ valid: false, message: "Error updating food", data: id,description,price,name,imageFile });
     }
 });
 };
