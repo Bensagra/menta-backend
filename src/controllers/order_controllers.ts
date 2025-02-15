@@ -204,7 +204,65 @@ const showOrdersConfirmed = async (req: Request, res: Response, prisma: PrismaCl
     }
 }
 
+const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaClient) => {
+    const { userId } = req.body;
+    const todayStart = startOfDay(new Date());
+    const todayEnd = endOfDay(new Date());
+
+    try {
+        const user = await prisma.user.findMany({
+            where: { id: userId, blocked: false, pedido: { some: { hour: { gte: todayStart, lte: todayEnd } } } }
+        });
+        if (!user) {
+            res.status(404).json({ valid: false, message: "User is not user" });
+            return
+        }
+        const orders = await prisma.pedido.findMany({
+            where: { userId: userId
+                ,hour:{
+                gte: todayStart,
+                lte: todayEnd
+            }},
+            include: {
+                user: {
+                    omit:{
+                        createdAt: true,
+                        modifyAt: true,
+                        password: true,
+                        blocked: true,
+                        role: true,
+
+                    }
+                },
+                food_pedido: {
+                    omit:{
+                        createdAt: true,
+                        modifyAt: true,
+                        
+                        id: true
+                    },
+                    include: {
+                        food: {omit:{
+                            createdAt: true,
+                            modifyAt: true,
+
+                        }}
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({ valid: true, message: "Orders retrieved successfully", data: orders });
+        return
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ valid: false, message: "Error retrieving orders", data: error });
+        return
+    }
+}
+
 export const orderControllers = {
+    showOrdersFromUser,
     createOrder,
     orderConfirmation,
     showOrders,

@@ -16,6 +16,7 @@ router.post("/food", (req: Request, res: Response) => foodControllers.createFood
 router.post("/order/confirmation", (req: Request, res: Response) => orderControllers.showOrders(req, res, prisma));
 router.post("/order/get", (req: Request, res: Response) => orderControllers.showOrdersConfirmed(req, res, prisma));
 router.delete("/food", (req: Request, res: Response) => foodControllers.deleteFood(req, res, prisma));
+router.post("/user/order/get", (req: Request, res: Response) => orderControllers.showOrdersFromUser(req, res, prisma));
 
 
 export default router;

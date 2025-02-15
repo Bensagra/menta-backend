@@ -64,6 +64,7 @@ const blockUser = async (req: Request, res: Response, prisma: PrismaClient) => {
 
 
 
+
 export const userControllers = {
     register,
     login,
