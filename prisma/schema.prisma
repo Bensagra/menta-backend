@@ -69,6 +69,7 @@ model food_pedido {
 model food_category {
   id        Int      @id @unique @default(autoincrement())
   name      String
+  img       String
   createdAt DateTime @default(now())
   modifyAt  DateTime @default(now())
 
