@@ -261,10 +261,25 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
     }
 }
 
+const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => {
+    prisma.pedido.findMany({
+        where: { status: "DELIVERED", hour: { lte: new Date() } },
+        select: { total: true }
+    }).then((data) => {
+        const balance = data.reduce((sum, order) => sum + order.total, 0);
+        res.status(200).json({ valid: true, balance });
+        return
+    }).catch((error) => {
+        res.status(500).json({ valid: false, message: "Error getting balance", data: error });
+        return
+    })
+}
+
 export const orderControllers = {
     showOrdersFromUser,
     createOrder,
     orderConfirmation,
     showOrders,
-    showOrdersConfirmed
+    showOrdersConfirmed,
+    getBalance
 }
