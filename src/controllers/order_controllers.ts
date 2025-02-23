@@ -211,14 +211,14 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
 
     try {
         const user = await prisma.user.findMany({
-            where: { id: userId, blocked: false, pedido: { some: { hour: { gte: todayStart, lte: todayEnd } } } }
+            where: { id: parseInt(userId), blocked: false, pedido: { some: { hour: { gte: todayStart, lte: todayEnd } } } }
         });
         if (!user) {
             res.status(404).json({ valid: false, message: "User is not user" });
             return
         }
         const orders = await prisma.pedido.findMany({
-            where: { userId: userId
+            where: { userId: parseInt(userId)
                 ,hour:{
                 gte: todayStart,
                 lte: todayEnd
