@@ -224,6 +224,8 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
                 gte: todayStart,
                 lte: todayEnd
             }},
+            orderBy: { hour: "desc" },
+            
             include: {
                 user: {
                     omit:{
