@@ -12,7 +12,7 @@ const createOrder = async (req: Request, res: Response, prisma: PrismaClient) =>
         }
         const foodPrices = await prisma.food.findMany({
             where: {
-                id: { in: order.map((food: { id: any }) => food.id) }
+                id: { in: order.map((food: { id: any }) => parseInt(food.id)) }
             },
             select: {
                 id: true,
