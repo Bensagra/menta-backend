@@ -225,7 +225,7 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
                 lte: todayEnd
             }},
             orderBy: { hour: "desc" },
-            
+
             include: {
                 user: {
                     omit:{
@@ -270,7 +270,7 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
         select: { total: true }
     }).then((data) => {
         const balance = data.reduce((sum, order) => sum + order.total, 0);
-        res.status(200).json({ valid: true, balance });
+        res.status(200).json({ valid: true, balance, quantity: data.length });
         return
     }).catch((error) => {
         res.status(500).json({ valid: false, message: "Error getting balance", data: error });
