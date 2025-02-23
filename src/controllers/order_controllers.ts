@@ -6,7 +6,7 @@ const createOrder = async (req: Request, res: Response, prisma: PrismaClient) =>
     const { order, hour, userId } = req.body;
 
     try {
-        if(await prisma.user.findUnique({where:{id:userId,blocked:true}})!=null){
+        if(await prisma.user.findUnique({where:{id:parseInt(userId),blocked:true}})!=null){
             res.status(400).json({valid:false, message: "User is blocked"});
             return;
         }
@@ -42,7 +42,7 @@ const createOrder = async (req: Request, res: Response, prisma: PrismaClient) =>
                     number: newNumber,
                     hour,
                     total: totalPrice,
-                    userId,
+                    userId:parseInt(userId),
                     status: "PENDING",
                     food_pedido: {
                         create: order.map((food: { id: any; quantity: any }) => ({
