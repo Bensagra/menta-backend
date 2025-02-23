@@ -265,18 +265,45 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
 }
 
 const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => {
+    // Calcula la fecha de hace 7 días
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  
     prisma.pedido.findMany({
-        where: { status: "DELIVERED", hour: { lte: new Date() } },
-        select: { total: true }
-    }).then((data) => {
-        const balance = data.reduce((sum, order) => sum + order.total, 0);
-        res.status(200).json({ valid: true, balance, quantity: data.length });
-        return
-    }).catch((error) => {
-        res.status(500).json({ valid: false, message: "Error getting balance", data: error });
-        return
+      where: { 
+        status: "DELIVERED", 
+        hour: { 
+          lte: new Date(),
+          gte: sevenDaysAgo
+        } 
+      },
+      select: { total: true, hour: true }
     })
-}
+    .then((data) => {
+      // Agrupa los pedidos por día (formateado como "YYYY-MM-DD")
+      const grouped = data.reduce((acc, order) => {
+        const day = new Date(order.hour).toISOString().slice(0, 10);
+        if (!acc[day]) {
+          acc[day] = { quantity: 0, balance: 0 };
+        }
+        acc[day].quantity++;
+        acc[day].balance += order.total;
+        return acc;
+      }, {} as Record<string, { quantity: number, balance: number }>);
+  
+      // Transforma el objeto agrupado en un array de objetos
+      const result = Object.entries(grouped).map(([day, stats]) => ({
+        day,
+        ...stats
+      }));
+  
+      res.status(200).json({ valid: true, data: result });
+    })
+    .catch((error) => {
+      res.status(500).json({ valid: false, message: "Error getting balance", data: error });
+    });
+  }
+  
 
 export const orderControllers = {
     showOrdersFromUser,
