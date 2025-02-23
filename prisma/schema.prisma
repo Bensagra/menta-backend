@@ -32,6 +32,7 @@ model pedido {
   createdAt DateTime  @default(now())
   hour    DateTime
   total     Float
+  notes   String?
 
 
   

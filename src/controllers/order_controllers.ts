@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { endOfDay, startOfDay } from "date-fns";
 
 const createOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
-    const { order, hour, userId } = req.body;
+    const { order, hour, userId, notes } = req.body;
 
     try {
         if(await prisma.user.findUnique({where:{id:parseInt(userId),blocked:true}})!=null){
@@ -43,6 +43,7 @@ const createOrder = async (req: Request, res: Response, prisma: PrismaClient) =>
                     hour,
                     total: totalPrice,
                     userId:parseInt(userId),
+                    notes: notes || null,
                     status: "PENDING",
                     food_pedido: {
                         create: order.map((food: { id: any; quantity: any }) => ({
