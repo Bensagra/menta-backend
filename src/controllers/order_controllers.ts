@@ -240,6 +240,9 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
         }
         const orders = await prisma.pedido.findMany({
             where: {
+                status: {
+                    not: "DELIVERED"
+                },
                 userId: parseInt(userId),
                 OR: [
                     {
