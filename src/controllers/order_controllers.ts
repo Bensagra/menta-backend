@@ -219,14 +219,23 @@ const showOrdersFromUser = async (req: Request, res: Response, prisma: PrismaCli
             return
         }
         const orders = await prisma.pedido.findMany({
-            where: { userId: parseInt(userId),
-                createdAt:{
-                gte: todayStart,
-                lte: todayEnd}
-                ,hour:{
-                gte: todayStart,
-                lte: todayEnd
-            }},
+            where: {
+                userId: parseInt(userId),
+                OR: [
+                    {
+                        createdAt: {
+                            gte: todayStart,
+                            lte: todayEnd
+                        }
+                    },
+                    {
+                        hour: {
+                            gte: todayStart,
+                            lte: todayEnd
+                        }
+                    }
+                ]
+            },
             orderBy: { hour: "desc" },
 
             include: {
