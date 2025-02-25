@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { endOfDay, startOfDay } from "date-fns";
+import { create } from "domain";
 
 const createOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
     const { order, hour, userId, notes } = req.body;
@@ -105,7 +106,7 @@ const showOrders = async (req: Request, res: Response, prisma: PrismaClient) => 
             return
         }
         const orders = await prisma.pedido.findMany({
-            where: { status: "PENDING"
+            where: { createdAt : { gte: todayStart, lte: todayEnd }
                 ,hour:{
                 gte: todayStart,
                 lte: todayEnd
