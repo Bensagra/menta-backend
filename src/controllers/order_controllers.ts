@@ -173,10 +173,20 @@ const showOrdersConfirmed = async (req: Request, res: Response, prisma: PrismaCl
         }
         const orders = await prisma.pedido.findMany({
             where: { status: "CONFIRMED"
-                ,hour:{
-                gte: todayStart,
-                lte: todayEnd
-            }},
+                ,OR: [
+                    {
+                        createdAt: {
+                            gte: todayStart,
+                            lte: todayEnd
+                        }
+                    },
+                    {
+                        hour: {
+                            gte: todayStart,
+                            lte: todayEnd
+                        }
+                    }
+                ]},
             include: {
                 user: {
                     omit:{
