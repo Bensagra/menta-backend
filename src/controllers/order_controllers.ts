@@ -346,7 +346,7 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
 
     try {
         // Verificar si el usuario está bloqueado
-        if (await prisma.user.findUnique({ where: { id: parseInt(userId), role:"ADMIN"} }) === null) {
+        if (! await prisma.user.findUnique({ where: { id: parseInt(userId), role:"ADMIN"} })) {
             res.status(400).json({ valid: false, message: "User is not admin" });
             return;
         }
