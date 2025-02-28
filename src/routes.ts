@@ -19,5 +19,6 @@ router.delete("/food", (req: Request, res: Response) => foodControllers.deleteFo
 router.post("/user/order/get", (req: Request, res: Response) => orderControllers.showOrdersFromUser(req, res, prisma));
 router.get("/order/balance", (req: Request, res: Response) => orderControllers.getBalance(req, res, prisma));
 router.put("/order/update", (req: Request, res: Response) => orderControllers.updateOrder(req, res, prisma));
+router.get("/order", (req: Request, res: Response) => orderControllers.getOrder(req,res, prisma));
 
 export default router;

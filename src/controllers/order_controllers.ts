@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { endOfDay, startOfDay } from "date-fns";
+import { get } from "http";
 
 const createOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
     const { order, hour, userId, notes } = req.body;
@@ -417,6 +418,37 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
     }
 };
 
+
+const getOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
+    // Se espera el id del pedido en los parámetros de la URL
+    const orderId = req.params.id;  
+
+    try {
+        // Buscar el pedido
+        const order = await prisma.pedido.findUnique({
+            where: { id: orderId },
+            include: {
+                user: true,
+                food_pedido: {
+                    include: {
+                        food: true
+                    }
+                }
+            }
+        });
+
+        if (!order) {
+            res.status(404).json({ valid: false, message: "Order not found" });
+            return;
+        }
+
+        res.status(200).json({ valid: true, message: "Order retrieved successfully", data: order });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ valid: false, message: "Error retrieving order", data: error });
+    }
+}
+
  
 
 
@@ -428,5 +460,6 @@ export const orderControllers = {
     orderConfirmation,
     showOrders,
     showOrdersConfirmed,
-    getBalance
+    getBalance,
+    getOrder
 }
