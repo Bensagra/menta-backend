@@ -421,7 +421,8 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
 
 const getOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
     // Se espera el id del pedido en los parámetros de la URL
-    const orderId = req.params.id;  
+    const orderId = req.query.id as string;  
+    console.log(orderId);
 
     try {
         // Buscar el pedido
