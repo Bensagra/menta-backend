@@ -338,10 +338,92 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
       res.status(500).json({ valid: false, message: "Error getting balance", data: error });
     });
   }
-  
+
+
+  const updateOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
+    // Se esperan en el body: orderId, order (array de items), hour, userId, notes y status
+    const { orderId, order, hour, userId, notes, status } = req.body;
+
+    try {
+        // Verificar si el usuario está bloqueado
+        if (await prisma.user.findUnique({ where: { id: parseInt(userId), role:"ADMIN"} }) === null) {
+            res.status(400).json({ valid: false, message: "User is not admin" });
+            return;
+        }
+
+        // Buscar el pedido a actualizar
+        const existingOrder = await prisma.pedido.findUnique({
+            where: { id: orderId },
+            include: { food_pedido: true }
+        });
+
+        if (!existingOrder) {
+            res.status(404).json({ valid: false, message: "Order not found" });
+            return;
+        }
+
+        // Construir el objeto con los datos a actualizar
+        const updateData: any = {};
+        if (hour !== undefined) updateData.hour = hour;
+        if (notes !== undefined) updateData.notes = notes;
+        if (status !== undefined) updateData.status = status;
+        if (userId !== undefined) updateData.userId = parseInt(userId);
+
+        // Si se envían nuevos items para el pedido, actualizamos también la relación y recalculamos el total
+        if (order) {
+            // Obtener los precios actualizados de los alimentos incluidos en el nuevo pedido
+            const foodPrices = await prisma.food.findMany({
+                where: {
+                    id: {
+                        in: order.map((food: { id: any }) => parseInt(food.id))
+                    }
+                },
+                select: {
+                    id: true,
+                    price: true
+                }
+            });
+
+            const priceMap = new Map(foodPrices.map(food => [food.id, food.price]));
+
+            // Calcular el total en base a los nuevos items
+            const totalPrice = order.reduce((sum: number, food: { id: any, quantity: number }) => {
+                return sum + (priceMap.get(parseInt(food.id)) || 0) * food.quantity;
+            }, 0);
+            updateData.total = totalPrice;
+
+            // Para simplificar, se eliminan todos los items previos y se crean los nuevos
+            await prisma.food_pedido.deleteMany({ where: { pedidoId: orderId } });
+            const newOrderItems = order.map((food: { id: any, quantity: number }) => ({
+                pedidoId: orderId,
+                foodId: parseInt(food.id),
+                quantity: food.quantity,
+                price: priceMap.get(parseInt(food.id)) || 0
+            }));
+
+            await prisma.food_pedido.createMany({ data: newOrderItems });
+        }
+
+        // Actualizar el pedido principal
+        const updatedOrder = await prisma.pedido.update({
+            where: { id: orderId },
+            data: updateData
+        });
+
+        res.status(200).json({ valid: true, message: "Order updated successfully", data: updatedOrder });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ valid: false, message: "Error updating order", data: error });
+    }
+};
+
+ 
+
+
 
 export const orderControllers = {
     showOrdersFromUser,
+    updateOrder,
     createOrder,
     orderConfirmation,
     showOrders,
