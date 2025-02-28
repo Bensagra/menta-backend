@@ -12,7 +12,7 @@ const getFood = (res:Response, prisma:PrismaClient) => {
             modifyAt: true
         },
         include: {
-            food: {where:{deleted:false},omit: {createdAt: true, modifyAt: true}}
+            food: {orderBy:{createdAt:"asc"},where:{deleted:false},omit: {createdAt: true, modifyAt: true,}}
         }
     }).then((data) => {
         res.status(200).json({valid:true, data});
