@@ -2,11 +2,13 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import multer from "multer";
 import supabase from "../utilities/supabase";
-import { parse } from 'path';
 const storage = multer.memoryStorage();
 const upload = multer({ storage }).single("image");
 const getFood = (res:Response, prisma:PrismaClient) => {
     prisma.food_category.findMany({
+        orderBy:{
+            createdAt:"asc"
+        },
         omit:{
             createdAt: true,
             modifyAt: true
