@@ -4,7 +4,7 @@ import { endOfDay, startOfDay } from "date-fns";
 import { get } from "http";
 
 const createOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
-    const { order, hour, userId, notes } = req.body;
+    const { order, hour, userId, notes,local } = req.body;
 
     try {
         if(await prisma.user.findUnique({where:{id:parseInt(userId),blocked:true}})!=null){
@@ -40,6 +40,7 @@ const createOrder = async (req: Request, res: Response, prisma: PrismaClient) =>
 
             return await tx.pedido.create({
                 data: {
+                    local,
                     number: newNumber,
                     hour,
                     total: totalPrice,
