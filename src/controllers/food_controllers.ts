@@ -28,7 +28,7 @@ const getFood = (res:Response, prisma:PrismaClient) => {
 const modifyFood = async (req: Request, res: Response, prisma: PrismaClient) => {
     upload(req, res, async (err) => {
 
-    const { id, description, price, name } = req.body;
+    const { id, description, price, name, categoryId } = req.body;
     console.log(req.body.id);
 
     const imageFile = req.file; // Capturar la imagen si fue enviada
@@ -62,6 +62,7 @@ const modifyFood = async (req: Request, res: Response, prisma: PrismaClient) => 
             data: {
                 description: description ?? existingFood.description,
                 price: parseFloat(price) ?? existingFood.price,
+                categoryId: parseFloat(categoryId) ?? existingFood.categoryId,
                 image: imageUrl, // Se mantiene la anterior si no se subió una nueva
                 modifyAt: new Date(),
                 name: name ?? existingFood.name,
