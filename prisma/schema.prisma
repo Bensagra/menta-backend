@@ -33,6 +33,7 @@ model pedido {
   hour    DateTime
   total     Float
   notes   String?
+  local Boolean? @default(false)
 
 
   
