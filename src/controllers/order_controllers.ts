@@ -344,7 +344,7 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
 
   const updateOrder = async (req: Request, res: Response, prisma: PrismaClient) => {
     // Se esperan en el body: orderId, order (array de items), hour, userId, notes y status
-    const { orderId, order, hour, userId, notes, status } = req.body;
+    const { orderId, order, hour, userId, notes, status, local} = req.body;
 
     try {
         // Verificar si el usuario está bloqueado
@@ -400,7 +400,8 @@ const getBalance = async (req: Request, res: Response, prisma: PrismaClient) => 
                 pedidoId: orderId,
                 foodId: parseInt(food.id),
                 quantity: food.quantity,
-                price: priceMap.get(parseInt(food.id)) || 0
+                price: priceMap.get(parseInt(food.id)) || 0,
+                local: local
             }));
 
             await prisma.food_pedido.createMany({ data: newOrderItems });
