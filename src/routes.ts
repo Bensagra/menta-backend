@@ -20,5 +20,6 @@ router.post("/user/order/get", (req: Request, res: Response) => orderControllers
 router.get("/order/balance", (req: Request, res: Response) => orderControllers.getBalance(req, res, prisma));
 router.put("/order/update", (req: Request, res: Response) => orderControllers.updateOrder(req, res, prisma));
 router.get("/order", (req: Request, res: Response) => orderControllers.getOrder(req,res, prisma));
+router.put("/food/stock", (req: Request, res: Response) => foodControllers.updateStock(req, res, prisma));
 
 export default router;

@@ -132,9 +132,22 @@ const deleteFood = async (req: Request, res: Response, prisma: PrismaClient) => 
     }
 };
 
+const updateStock = async (req: Request, res: Response, prisma: PrismaClient) => {
+    const { id } = req.body;
+    try {
+        const stock = await prisma.food.findUnique({ where: { id } });
+        const food = await prisma.food.update({ where: { id }, data: { stock: !stock!.stock} });
+        res.status(200).json({ valid: true, message: "Stock updated successfully", data: food });
+    }
+    catch (error) {
+        res.status(500).json({ valid: false, message: "Error updating stock", data: error });
+    }
+}
+
 export const foodControllers = {
     getFood,
     modifyFood,
     createFood,
     deleteFood,
+    updateStock
 }

@@ -48,6 +48,7 @@ model food {
   price       Float
   image       String
   categoryId  Int
+  stock      Boolean @default(true)
   category    food_category @relation(fields: [categoryId], references: [id])
   createdAt   DateTime  @default(now())
   modifyAt    DateTime  @default(now())
